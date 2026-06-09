@@ -30,13 +30,6 @@ Then open:
 http://127.0.0.1:8000
 ```
 
-Seed accounts:
-
-```text
-Admin: admin@dgx.local / admin1234
-User:  user@dgx.local  / user1234
-Observer: observer@dgx.local / observer1234
-```
 
 ## Roles
 
