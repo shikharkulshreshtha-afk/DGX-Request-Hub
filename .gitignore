@@ -1,0 +1,4 @@
+dgx_access.sqlite
+dgx_access.sqlite-*
+__pycache__/
+*.pyc
