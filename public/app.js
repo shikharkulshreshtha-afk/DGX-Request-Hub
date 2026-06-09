@@ -132,6 +132,14 @@ async function api(path, options = {}) {
   }
 
   const response = await fetch(path, { ...requestOptions, headers });
+  async function api(path, options = {}) {
+  const { auth = true, ...requestOptions } = options;
+  const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
+  if (auth && state.token) headers.Authorization = `Bearer ${state.token}`;
+
+  console.log('[API]', requestOptions.method || 'GET', path); // ← add this
+
+  const response = await fetch(path, { ...requestOptions, headers });
   const text = await response.text();
   const body = text ? JSON.parse(text) : {};
 
