@@ -136,7 +136,26 @@ async function api(path, options = {}) {
 
   console.log('[API]', requestOptions.method || 'GET', path); // ← add this
 
+  async function api(path, options = {}) {
+  const { auth = true, ...requestOptions } = options;
+  const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
+  if (auth && state.token) headers.Authorization = `Bearer ${state.token}`;
+
   const response = await fetch(path, { ...requestOptions, headers });
+  const text = await response.text();
+  const body = text ? JSON.parse(text) : {};
+
+  if (response.status === 401) {
+    if (auth) {
+      clearSession();
+      throw new Error("Your session expired. Please sign in again.");
+    }
+  }
+  if (!response.ok) {
+    throw new Error(body.error || "Request failed.");
+  }
+  return body;
+}
   const text = await response.text();
   const body = text ? JSON.parse(text) : {};
 
