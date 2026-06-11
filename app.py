@@ -3366,7 +3366,7 @@ class AppHandler(BaseHTTPRequestHandler):
 
 def main() -> None:
     init_db()
-    host = os.getenv("HOST", "0.0.0.0")  # ← change 127.0.0.1 to 0.0.0.0
+    host = os.getenv("HOST", "127.0.0.1")
     port = int(os.getenv("PORT", "8000"))
     stop_event = threading.Event()
     scheduler = threading.Thread(target=scheduler_loop, args=(stop_event,), daemon=True)
