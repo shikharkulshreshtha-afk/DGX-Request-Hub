@@ -2278,7 +2278,6 @@ def held_capacity_by_type(conn: sqlite3.Connection) -> dict[str, int]:
 
 
 def active_inventory_used_by_type(conn: sqlite3.Connection) -> dict[str, int]:
-    current = now_iso()
     rows = conn.execute(
         """
         SELECT ii.resource_type, COUNT(DISTINCT ii.id) AS used
@@ -2286,11 +2285,8 @@ def active_inventory_used_by_type(conn: sqlite3.Connection) -> dict[str, int]:
         JOIN inventory_items ii ON ii.id = aii.inventory_item_id
         JOIN allocations a ON a.id = aii.allocation_id
         WHERE a.status IN ('SCHEDULED', 'ACTIVE', 'EXPIRING')
-          AND a.start_at <= ?
-          AND a.end_at > ?
         GROUP BY ii.resource_type
-        """,
-        (current, current),
+        """
     ).fetchall()
     used = {"FULL_GPU": 0, "MIG": 0}
     for row in rows:
@@ -3366,7 +3362,7 @@ class AppHandler(BaseHTTPRequestHandler):
 
 def main() -> None:
     init_db()
-    host = os.getenv("HOST", "0.0.0.0")  # ← change 127.0.0.1 to 0.0.0.0
+    host = os.getenv("HOST", "127.0.0.1")
     port = int(os.getenv("PORT", "8000"))
     stop_event = threading.Event()
     scheduler = threading.Thread(target=scheduler_loop, args=(stop_event,), daemon=True)
