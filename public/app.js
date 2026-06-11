@@ -132,30 +132,6 @@ async function api(path, options = {}) {
   }
 
   const response = await fetch(path, { ...requestOptions, headers });
-  
-
-  console.log('[API]', requestOptions.method || 'GET', path); // ← add this
-
-  async function api(path, options = {}) {
-  const { auth = true, ...requestOptions } = options;
-  const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
-  if (auth && state.token) headers.Authorization = `Bearer ${state.token}`;
-
-  const response = await fetch(path, { ...requestOptions, headers });
-  const text = await response.text();
-  const body = text ? JSON.parse(text) : {};
-
-  if (response.status === 401) {
-    if (auth) {
-      clearSession();
-      throw new Error("Your session expired. Please sign in again.");
-    }
-  }
-  if (!response.ok) {
-    throw new Error(body.error || "Request failed.");
-  }
-  return body;
-}
   const text = await response.text();
   const body = text ? JSON.parse(text) : {};
 
@@ -308,7 +284,7 @@ async function handleLogout() {
 async function handleCreateRequest(formData) {
   const payload = Object.fromEntries(formData);
   payload.quantity = Number(payload.quantity || 1);
-  payload.duration_hours = Number(payload.duration_hours || 1);
+  payload.duration_hours = Number(payload.duration_hours || 1) * 24; // user inputs days, backend expects hours
   payload.requested_start_at = normalizeDateTimeLocal(payload.requested_start_at);
   if (payload.resource_type === "FULL_GPU") payload.mig_profile = null;
   await api("/api/requests", {
@@ -1297,7 +1273,7 @@ function renderRequesterView() {
           </select>
         </label>
         <label>Quantity<input type="number" min="1" name="quantity" value="1" required /></label>
-        <label>Duration days<input type="number" min="0.5" step="0.5" name="duration_hours" value="1" required /></label>
+        <label>Duration (days)<input type="number" min="0.5" step="0.5" name="duration_hours" value="1" required placeholder="e.g. 1, 2.5" /></label>
         <label>Requested start<input type="datetime-local" name="requested_start_at" value="${toDateTimeLocal()}" required /></label>
         <label>Purpose<textarea name="purpose" rows="3" required placeholder="Training run, inference test, migration validation..."></textarea></label>
         <label>Urgency<input name="urgency" placeholder="Normal, deadline, incident..." /></label>
