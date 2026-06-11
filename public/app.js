@@ -284,7 +284,7 @@ async function handleLogout() {
 async function handleCreateRequest(formData) {
   const payload = Object.fromEntries(formData);
   payload.quantity = Number(payload.quantity || 1);
-  payload.duration_hours = Number(payload.duration_hours || 1) * 24; // user inputs days, backend expects hours
+  payload.duration_hours = Number(payload.duration_hours || 1);
   payload.requested_start_at = normalizeDateTimeLocal(payload.requested_start_at);
   if (payload.resource_type === "FULL_GPU") payload.mig_profile = null;
   await api("/api/requests", {
@@ -1273,7 +1273,7 @@ function renderRequesterView() {
           </select>
         </label>
         <label>Quantity<input type="number" min="1" name="quantity" value="1" required /></label>
-        <label>Duration (days)<input type="number" min="0.5" step="0.5" name="duration_hours" value="1" required placeholder="e.g. 1, 2.5" /></label>
+        <label>Duration days<input type="number" min="0.5" step="0.5" name="duration_hours" value="1" required /></label>
         <label>Requested start<input type="datetime-local" name="requested_start_at" value="${toDateTimeLocal()}" required /></label>
         <label>Purpose<textarea name="purpose" rows="3" required placeholder="Training run, inference test, migration validation..."></textarea></label>
         <label>Urgency<input name="urgency" placeholder="Normal, deadline, incident..." /></label>
